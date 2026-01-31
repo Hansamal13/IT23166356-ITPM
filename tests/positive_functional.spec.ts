@@ -99,8 +99,8 @@ const testCases = [
   {
     id: "Pos_Fun_0015",
     name: "Polite phrasing",
-    input: "maava gedhara gihin danna puluvandha?",
-    expected: "මාවා ගෙදර ගිහින දාන පුලුවන්දහ?",
+    input: "maava gedhara gihin dhaanna puluvandha?",
+    expected: "මාව ගෙදර ගිහින් දාන්න පුලුවන්ද?",
   },
   {
     id: "Pos_Fun_0016",
@@ -123,14 +123,14 @@ const testCases = [
   {
     id: "Pos_Fun_0019",
     name: "past tense narrative",
-    input: "mama mehee edhdhi beheth aran avaa",
-    expected: "මම මෙහේ එද්දි බෙහෙත් අරන් අවා",
+    input: "mama mehee edhdhi beheth aran aavaa",
+    expected: "මම මෙහේ එද්දි බෙහෙත් අරන් ආවා",
   },
   {
     id: "Pos_Fun_0020",
     name: "emotional expression",
-    input: "oyaa rassaval karanna mahansi venahati dekkahama mata dhuka hithuna,oyaata lankavee adha saappu ayithi aragena raaja kumarayek wagee inna puluvan kenek",
-    expected: "ඔයා රස්සවල් කරන්න මහාන්සි වෙනහති දැක්කහම මට දූක හිතුන,ඔයාට ලංකවී අද සප්පු ආයිති අරගෙන රජයකුමරයකට වගේ ඉන්න පුලුවනයකට",
+    input: "oyaa rassaaval karanna mahansi venahaeti dhaekkahama mata dhuka hithunaa,oyaata laQQkaavee kada saappu ayithi karagena raaja kumaarayek vagee inna puluvan kenek",
+    expected: "ඔයා රස්සාවල් කරන්න මහන්සි වෙනහැටි දැක්කහම මට දුක හිතුනා,ඔයාට ලංකාවේ කඩ සාප්පු අයිති කරගෙන රාජ කුමාරයෙක් වගේ ඉන්න පුලුවන් කෙනෙක්",
   },
   {
     id: "Pos_Fun_0021",
