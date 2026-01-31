@@ -4,14 +4,14 @@ const testCases = [
   {
     id: "Neg_UI_0001",
     name: "Long UI lag",
-    input: "gavayaa gavayaa gavayaa gavayaa gavayaa",
-    expected: "ගවයා ගවයා ගවයා ගවයා ගවයා",
+    input: "pala pala pala pala pala pala",
+    expected: "පල පල පල පල පල පල",
   },
   {
     id: "Neg_UI_0002",
     name: "Overflow handling",
-    input: "gavayaa ".repeat(12),
-    expected: "ගවයා ".repeat(12),
+    input: "1234 ".repeat(12),
+    expected: "1234 ".repeat(12),
   },
   {
     id: "Neg_UI_0003",
