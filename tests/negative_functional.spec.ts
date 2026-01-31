@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 const testCases = [
   {
     id: "Neg_Fun_0001",
-    name: "Mix letters",
+    name: "Mix Convert sentence with mixed English words without spaces",
     input: "Lamaiadhaschoolyanneewheelekee",
     expected: "something-wrong",
   },
@@ -15,13 +15,13 @@ const testCases = [
   },
   {
     id: "Neg_Fun_0003",
-    name: "slag question",
+    name: "Without spaces",
     input: "ekapoddaamaruyivagee",
     expected: "something-wrong",
   },
   {
     id: "Neg_Fun_0004",
-    name: "date ",
+    name: "date referance without space ",
     input: "january25yannee",
     expected: "something-wrong",
   },
