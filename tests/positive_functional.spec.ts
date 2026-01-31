@@ -1,12 +1,20 @@
 import { test, expect } from "@playwright/test";
+import * as fs from "fs";
+import * as path from "path";
 
 // Increase navigation timeout for all tests in this file
 test.use({ navigationTimeout: 60000 });
 
+// Create screenshots directory if it doesn't exist
+const screenshotsDir = path.join(__dirname, "screenshots");
+if (!fs.existsSync(screenshotsDir)) {
+  fs.mkdirSync(screenshotsDir, { recursive: true });
+}
+
 const testCases = [
   {
     id: "Pos_Fun_0001",
-    name: "daily greetin question",
+    name: "daily greeting question",
     input: "oyaata kohomadha?",
     expected: "ඔයාට කොහොමද?",
   },
@@ -96,7 +104,7 @@ const testCases = [
   },
   {
     id: "Pos_Fun_0016",
-    name: "compound sentence with uestion",
+    name: "compound sentence with question",
     input: "mama gedhara yanavaa oyaa enavadha?",
     expected: "මම ගෙදර යනවා ඔයා එනවද?",
   },
@@ -108,7 +116,7 @@ const testCases = [
   },
   {
     id: "Pos_Fun_0018",
-    name: "convert sentense with adverbs and name",
+    name: "convert sentence with adverbs and name",
     input: "Amal adha amuthu vidhihata naetuvaa",
     expected: "අමල් අද අමුතු විදිහට නැටුවා",
   },
@@ -153,32 +161,84 @@ const testCases = [
 test.describe("Positive Functional Tests", () => {
   for (const tc of testCases) {
     test(`${tc.id} - ${tc.name}`, async ({ page }) => {
+      // Navigate to the website
       await page.goto("https://www.swifttranslator.com/", {
         waitUntil: "networkidle",
       });
-      const inputArea = page.getByPlaceholder("Input Your Singlish Text Here.");
-      const inputSelector =
-        'textarea[placeholder="Input Your Singlish Text Here."]';
-      await page.fill(inputSelector, "");
-      await inputArea.click();
-      await inputArea.pressSequentially(tc.input, { delay: 35 });
-      await page.evaluate((sel) => {
-        const el = document.querySelector(sel);
-        if (!el) return;
-        el.dispatchEvent(
-          new CompositionEvent("compositionend", {
-            bubbles: true,
-            cancelable: true,
-            data: (el as HTMLTextAreaElement).value,
-          }),
-        );
-        el.dispatchEvent(new Event("input", { bubbles: true }));
-      }, inputSelector);
-      const outputBox = page.locator('.card:has-text("Sinhala") .bg-slate-50');
-      await expect(outputBox).toContainText(tc.expected, { timeout: 10000 });
-      const output = await outputBox.textContent();
-      expect(output).toContain(tc.expected);
-      await page.close();
+
+      // Take screenshot before input
+      await page.screenshot({ 
+        path: path.join(screenshotsDir, `before-${tc.id}.png`),
+        fullPage: true 
+      });
+
+      // Locate the input field
+      const inputField = page.getByPlaceholder("Input Your Singlish Text Here.");
+      
+      // Clear the input field
+      await inputField.clear();
+      
+      // Fill in the test input
+      await inputField.fill(tc.input);
+      
+      // Wait for the conversion to complete
+      await page.waitForTimeout(2000);
+      
+      // Take screenshot after input and conversion
+      await page.screenshot({ 
+        path: path.join(screenshotsDir, `after-${tc.id}.png`),
+        fullPage: true 
+      });
+      
+      // Debug: Print all textarea values on the page
+      console.log(`\n=== Test ${tc.id} - ${tc.name} ===`);
+      console.log(`Input: "${tc.input}"`);
+      
+      const allTextareas = await page.locator('textarea').all();
+      console.log(`Found ${allTextareas.length} textarea(s) on the page:`);
+      
+      for (let i = 0; i < allTextareas.length; i++) {
+        const value = await allTextareas[i].inputValue();
+        const placeholder = await allTextareas[i].getAttribute('placeholder');
+        const isReadonly = await allTextareas[i].getAttribute('readonly');
+        console.log(`  Textarea ${i}:`);
+        console.log(`    - Placeholder: ${placeholder}`);
+        console.log(`    - Readonly: ${isReadonly}`);
+        console.log(`    - Value: "${value}"`);
+      }
+      
+      // Try to locate the output field using multiple strategies
+      let outputField;
+      let actualOutput = "";
+      
+      // Strategy 1: Try readonly textarea
+      outputField = page.locator('textarea[readonly]');
+      if (await outputField.count() > 0) {
+        actualOutput = await outputField.first().inputValue();
+        console.log(`Output from readonly textarea: "${actualOutput}"`);
+      }
+      
+      // Strategy 2: If no readonly, try second textarea
+      if (!actualOutput && allTextareas.length > 1) {
+        actualOutput = await allTextareas[1].inputValue();
+        console.log(`Output from second textarea: "${actualOutput}"`);
+      }
+      
+      // Strategy 3: Try looking for specific class or ID
+      if (!actualOutput) {
+        const divOutput = page.locator('.bg-slate-50');
+        if (await divOutput.count() > 0) {
+          actualOutput = await divOutput.first().textContent() || "";
+          console.log(`Output from .bg-slate-50 div: "${actualOutput}"`);
+        }
+      }
+      
+      console.log(`Expected: "${tc.expected}"`);
+      console.log(`Actual: "${actualOutput.trim()}"`);
+      console.log(`Match: ${actualOutput.trim() === tc.expected}`);
+      
+      // Verify the output matches the expected value
+      expect(actualOutput.trim()).toBe(tc.expected);
     });
   }
 });
